@@ -1,4 +1,9 @@
 version: 2
+commands:
+  print_pipeline_id:
+    steps:
+      - run: echo ${CIRCLE_WORKFLOW_ID}
+
 jobs: # we now have TWO jobs, so that a workflow can coordinate them!
   one: # This is our first job.
     docker: # it uses the docker executor
@@ -22,9 +27,15 @@ jobs: # we now have TWO jobs, so that a workflow can coordinate them!
       - run: echo "A more familiar hi" # We run a similar echo command to above.
       - run: sleep 15 # and then sleep for 15 seconds.
 # Under the workflows: map, we can coordinate our two jobs, defined above.
+    my_job:
+      docker:
+        - image: circleci/node:13.8.0
+    steps:
+      - print_pipeline_id
 workflows:
   version: 2
   one_and_two: # this is the name of our workflow
     jobs: # and here we list the jobs we are going to run.
       - one
       - two
+      - my_job
